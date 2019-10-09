@@ -1,0 +1,18 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: user-consumer
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: chen123
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90

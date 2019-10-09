@@ -1,0 +1,31 @@
+//修改发端口
+server:
+  port: 8081
+//给服务起名  数据库配置
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: chen123
+//别名
+mybatis:
+  type-aliases-package: com.study.cloud.user.vo
+//将此服务注册到eureka注册中心进行注册
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka //可以注册多个    用逗号隔开
+  //实例
+  instance:
+      prefer-ip-address: false
+      ip-address: 127.0.0.1
+      lease-renewal-interval-in-seconds: 30
+      lease-expiration-duration-in-seconds: 90
+//声明这个服务注册到eureka服务当中  使用在springapplication配置类上
+@EnableDiscoveryClient
+//声明这个服务为eureka服务 使用在springapplication配置类上
+@EnableEurekaServer
+//使用轮询算法     默认使用拦截器实现
+@LoadBalanced

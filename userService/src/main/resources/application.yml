@@ -1,0 +1,15 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: chen123
+mybatis:
+  type-aliases-package: com.study.cloud.user.vo
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
