@@ -11,6 +11,8 @@ package com.study.web;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
+import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.study.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -29,23 +31,31 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("consumer")
+@DefaultProperties(defaultFallback ="queryIdfallback")
 public class UserController {
     @Autowired
     private RestTemplate restTemplate;
 
-   // @Autowired
-   // private DiscoveryClient discoveryClient;
+    // @Autowired
+    // private DiscoveryClient discoveryClient;
 
     @GetMapping("/{id}")
-    public User queryId(@PathVariable("id") Long id) {
+    //@HystrixCommand(fallbackMethod = "queryIdfallback")
+    @HystrixCommand
+    public String queryId(@PathVariable("id") Long id) {
         //根据服务id获取实例
-       // List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
+        // List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
         //从实例中获取id和port
-       // ServiceInstance serviceInstance = instances.get(0);
+        // ServiceInstance serviceInstance = instances.get(0);
         //String url="http://"+serviceInstance.getHost()+":"+serviceInstance.getPort() +"/user/"+id;
         //注解方式
-        String url="http://user-service/user/"+id;
-        return restTemplate.getForObject(url, User.class);
+        String url = "http://user-service/user/" + id;
+        User user = restTemplate.getForObject(url, User.class);
+        return user.toString();
     }
 
+    public String queryIdfallback() {
+        return "不好意思，服务器太拥挤了";
+
+    }
 }

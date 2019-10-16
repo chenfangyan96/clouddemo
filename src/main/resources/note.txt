@@ -29,3 +29,4 @@ eureka:
 @EnableEurekaServer
 //使用轮询算法     默认使用拦截器实现
 @LoadBalanced
+@MapperScan  对
