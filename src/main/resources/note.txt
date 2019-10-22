@@ -12,17 +12,64 @@ spring:
 //别名
 mybatis:
   type-aliases-package: com.study.cloud.user.vo
+
+
+
+        Eureka
+     服务注册
+     eureka:
+       client:
+         service-url:
+           defaultZone: http://127.0.0.1:10086/eureka //可以注册多个    用逗号隔开
+          register-with-eureka:false//不注册自己
+       instance:
+           prefer-ip-address: false
+           ip-address: 127.0.0.1
+           lease-renewal-interval-in-seconds: 30 //续约
+           lease-expiration-duration-in-seconds: 90//失效时长
+     服务续约
+
+
+                    Ribbon 负载均衡
+     第一步  在调用者服务商添加依赖
+      <dependency>
+                 <groupId>org.springframework.cloud</groupId>
+                 <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+             </dependency>
+      2.在TestTemplate上添加@LoadBalanced注解
+      3.在url中直接写被调用者服务的id代替url
+                        String url="http://user-service/user/"+id;
+       原理：拦截器原理  LoadBalancerIntercptor拦截
+
+                    Hystrix
+                服务降级   线程池满  请求超时
+
+
+                 县城隔离
+                优先保证核心业务  而非核心业务不可用或者弱可用
+                hystrix:
+                  command:
+                    default:
+                      execution:
+                        isolation:
+                          thread:
+                            timeoutInMilliseconds:3000
+
+
+
+
 //将此服务注册到eureka注册中心进行注册
 eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:10086/eureka //可以注册多个    用逗号隔开
+     register-with-eureka:false//不注册自己
   //实例
   instance:
       prefer-ip-address: false
       ip-address: 127.0.0.1
-      lease-renewal-interval-in-seconds: 30
-      lease-expiration-duration-in-seconds: 90
+      lease-renewal-interval-in-seconds: 30 //续约
+      lease-expiration-duration-in-seconds: 90//失效剔除时长
 //声明这个服务注册到eureka服务当中  使用在springapplication配置类上
 @EnableDiscoveryClient
 //声明这个服务为eureka服务 使用在springapplication配置类上
@@ -30,3 +77,39 @@ eureka:
 //使用轮询算法     默认使用拦截器实现
 @LoadBalanced
 @MapperScan  对
+
+
+Feign
+添加注解
+在调用层服务Main方法上添加@EnableFeignClients
+编写接口
+  @FeignClient("user-service")
+                                    public interface UserClient {
+                                        @GetMapping("/user/{id}")
+                                        User queryId(@PathVariable("id") Long id);
+                                    }
+在controller中注入
+ @Autowired
+ private UserClient userClient;
+
+ feign中的熔断器和ribbon不太一样
+ 他
+ Ribbon：
+    ConnetctionTimeOut:500//建立连接
+    ReadTimeOut：2000 //读取时间
+
+
+
+
+
+ Ribbon和Feign都是用于调用其他服务的，不过方式不同。
+
+ 1.启动类使用的注解不同，Ribbon用的是@RibbonClient，Feign用的是@EnableFeignClients。
+
+ 2.服务的指定位置不同，Ribbon是在@RibbonClient注解上声明，Feign则是在定义抽象方法的接口中使用@FeignClient声明。
+
+ 3.调用方式不同，Ribbon需要自己构建http请求，模拟http请求然后使用RestTemplate发送给其他服务，步骤相当繁琐。
+
+   Feign则是在Ribbon的基础上进行了一次改进，采用接口的方式，将需要调用的其他服务的方法定义成抽象方法即可，
+
+   不需要自己构建http请求。不过要注意的是抽象方法的注解、方法签名要和提供服务的方法完全一致。

@@ -12,13 +12,9 @@ package com.study;/**
  */
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
 
 /**
  * @author 陈方岩
@@ -26,16 +22,17 @@ import org.springframework.web.client.RestTemplate;
  */
 /*
 这三个注释    熔断器  注册  springbooot自动化配置  =SpringCloudApplication
-@EnableCircuitBreaker
-@EnableDiscoveryClient
+@EnableCircuitBreaker  //Hystrix
+@EnableDiscoveryClient   //Eureka
 @SpringBootApplication*/
 @SpringCloudApplication
+@EnableFeignClients
 public class ConsumerApplication {
-    @Bean
-    @LoadBalanced    //轮询算法  使用拦截器的形式进行访问
+   /* @Bean
+    @LoadBalanced
     public RestTemplate restTemplate(){
         return new RestTemplate();
-    }
+    }*/
     public static void main(String[] args) {
         SpringApplication.run(ConsumerApplication.class);
     }
