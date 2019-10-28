@@ -8,12 +8,9 @@ zuul:
     socket-timeout-millis: 60000
     connect-timeout-millis: 60000
   routes:
-    user-consumer:
-      path: /user-consumer/**
-      serverId: user-consumer
-    user-service:
-      path: /user-service/**
-      serverId: user-service
+    user-service:  /user-service/**
+  ingored-services:
+    - user-consumer
 eureka:
   client:
     service-url:
